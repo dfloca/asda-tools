@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
-import SowelCalculator from './calculators/sowel';
+// import Sowels from './calculators/sowel.jsx';
+import Sowel2 from './calculators/sowel2.jsx';
 
 function App() {
     return(
-        <SowelCalculator></SowelCalculator>
+        <Sowel2></Sowel2>
     )
 }
 
