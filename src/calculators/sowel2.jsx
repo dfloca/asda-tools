@@ -8,71 +8,145 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useState } from 'react';
 
+function Gear({name, props, onMaxChange, onSowelChange, onValueChange}) {
+    return <Container type="disc" className='item border' key={name}>
+            <Row>
+                <label>
+                    <b>{name}</b>
+                </label>
+            </Row>
+            <Row md={4}>
+                <Col>
+                    <Form.Switch id={`${name}-is-max`} label={'Is +20?'} onChange={onMaxChange}/>
+                </Col>                            
+            </Row>
+            <Row md={4} className='border'>
+                <label>Sowel 1</label>
+                <Col>
+                    <Sowels id={`${name}_p_sowel_type`} name={`p_sowel_type`} value={props.p_sowel_type} handleChange={onSowelChange}></Sowels>
+                </Col>
+                <Col>
+                    <Form.Control id={`p_value`} type="number" placeholder='Sowel Value' onChange={onValueChange} />
+                </Col>
+            </Row>
+            <Row md={4} className='border'>
+                <label>Sowel 2</label>
+                <Col>
+                    <Sowels id={`${name}_s_sowel_type`} name={`s_sowel_type`} value={props.s_sowel_type} handleChange={onSowelChange}></Sowels>
+                </Col>
+                <Col>
+                    <Form.Control id={`s_value`} type="number" placeholder='Sowel Value' onChange={onValueChange} />
+                </Col>
+            </Row>
+        </Container>
+}
+
 export default function Sowel2() {
+    const [gear, setGear] = useState(Array(6).fill({
+        is_max: false,
+        p_sowel_type: null,
+        p_sowel_val: null,
+        p_calc: null,
+        s_sowel_type: null,
+        s_sowel_val: null,
+        s_calc: null
+    }));
 
-    function Gear({name}) {
-        const [is_max, set_is_max] = useState(true);
-        const [p_sowel_type, set_p_sowel_type] = useState("Stamina");
-        const [p_sowel_val, set_p_sowel_val] = useState("");
-        const [s_sowel_type, set_s_sowel_type] = useState("Stamina");
-        const [s_sowel_val, set_s_sowel_val] = useState("");
+    const [values, setValues] = useState(Array(6).fill(null));
 
-        function handleChange(event) {
-            set_is_max(event.target.checked);
-            console.log(is_max)
+    function handleChange(i, value) {
+        gear[i].is_max = value;
+        setGear(gear);
+        console.log(gear);
+
+        checkCalcReady(i);
+    }
+
+    function handleSowelChange(i, event) {
+        console.log(event.target.name);
+        console.log(event.target.value);
+        if(event.target.name == 'p_sowel_type')
+            gear[i].p_sowel_type = event.target.value;
+        else
+            gear[i].s_sowel_type = event.target.value;
+        setGear(gear);
+        console.log(gear);
+
+        checkCalcReady(i);
+    }
+
+    function handleValueChange(i, event) {
+        if(event.target.id == 'p_value')
+            gear[i].p_sowel_val = event.target.value
+        else
+            gear[i].s_sowel_val = event.target.value
+        
+        setGear(gear);
+        
+        checkCalcReady(i);
+    }
+
+    function checkCalcReady(i) {
+        console.log(gear[i].p_sowel_val)
+        if(gear[i].p_sowel_type && gear[i].p_sowel_val) {
+            calculate(i);
         }
+    }
 
-        return <Container type="disc" className='item border' key={name}>
-                <Row>
-                    <label>
-                        <b>{name}</b>
-                    </label>
-                </Row>
-                <Row md={4}>
-                    <Col>
-                        Is +20?
-                    </Col>
-                    <Col>
-                        <Form.Check type="switch" id={`${name}-is-max`} checked={is_max} value={is_max} onChange={handleChange}/>
-                    </Col>                            
-                </Row>
-                <Row md={4} className='border'>
-                <label>Sowel</label>
-                    <Col>
-                        <Sowels id={`${name}-p-sowel`} value={p_sowel_type}></Sowels>
-                    </Col>
-                    <Col>
-                        <Form.Control id={`${name}-p-value`} placeholder='Sowel Value' defaultValue={p_sowel_val} />
-                    </Col>
-                </Row>
-                <Row md={4} className='border'>
-                    <label>Sowel</label>
-                    <Col>
-                        <Sowels id={`${name}-s-sowel`} value={s_sowel_type}></Sowels>
-                    </Col>
-                    <Col>
-                        <Form.Control id={`${name}-s-value`} placeholder='Sowel Value' defaultValue={s_sowel_val} />
-                    </Col>
-                </Row>
-            </Container>
+    function calculate(i) {
+        var num_sowel_type = gear.filter(g => g.p_sowel_type == gear[i].p_sowel_type).length + gear.filter(g => g.s_sowel_type == gear[i].p_sowel_type).length
+        // console.log(gear.filter(g => g.p_sowel_type == gear[i].p_sowel_type));
     }
 
     return (
         <>
             <div className='row'>
-                <Gear name="Helmet"/>
+                <Gear name="Weapon" 
+                    props={gear[0]} 
+                    onMaxChange={(e) => handleChange(0, e.target.checked)} 
+                    onSowelChange={(e) => handleSowelChange(0, e)}
+                    onValueChange={(e) => handleValueChange(0, e)}
+                />
             </div>
             <div className='row'>
-                <Gear name="Chest"/>
+                <Gear name="Shirt" 
+                    props={gear[1]} 
+                    onMaxChange={(e) => handleChange(1, e.target.checked)} 
+                    onSowelChange={(e) => handleSowelChange(1, e)}
+                    onValueChange={(e) => handleValueChange(1, e)}
+                />
             </div>
             <div className='row'>
-                <Gear name="Gloves"/>
+                <Gear name="Pants" 
+                    props={gear[2]} 
+                    onMaxChange={(e) => handleChange(2, e.target.checked)}
+                    onSowelChange={(e) => handleSowelChange(2, e)}
+                    onValueChange={(e) => handleValueChange(2, e)}
+                />
             </div>
             <div className='row'>
-                <Gear name="Pants"/>
+                <Gear name="Helmet" 
+                    props={gear[3]} 
+                    onMaxChange={(e) => handleChange(3, e.target.checked)}
+                    onSowelChange={(e) => handleSowelChange(3, e)}
+                    onValueChange={(e) => handleValueChange(3, e)}
+                />
             </div>
             <div className='row'>
-                <Gear name="Boots"/>
+                <Gear name="Shoes" 
+                    props={gear[4]} 
+                    onMaxChange={(e) => handleChange(4, e.target.checked)}
+                    onSowelChange={(e) => handleSowelChange(4, e)}
+                    onValueChange={(e) => handleValueChange(4, e)}
+                />
+            </div>
+            <div className='row'>
+                <Gear name="Gloves" 
+                    props={gear[5]} 
+                    onMaxChange={(e) => handleChange(5, e.target.checked)}
+                    onSowelChange={(e) => handleSowelChange(5, e)}
+                    onValueChange={(e) => handleValueChange(5, e)}
+                />
             </div>
         </>
     )

@@ -1,8 +1,8 @@
 import Form from 'react-bootstrap/Form';
 
-function Sowels() {
+function Sowels({id, name, handleChange}) {
     return (
-        <Form.Select id="sowels" aria-label="Sowel">
+        <Form.Select id={id} name={name} aria-label="Sowel" onChange={handleChange}>
             <option>Stamina</option>
             <option>Luck</option>
             <option>Intelligence</option>
